@@ -5,6 +5,7 @@ import folium
 from streamlit_folium import st_folium
 from io import StringIO
 import math
+import chardet
 
 st.set_page_config(page_title="DJI 비행로그 분석기", layout="wide")
 st.title("🛸 DJI 비행로그 분석기")
@@ -13,7 +14,13 @@ uploaded_file = st.file_uploader("비행 로그 파일 업로드 (.CSV 또는 .T
 
 if uploaded_file:
     # 파일 읽기
-    stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
+    # 인코딩 감지
+    raw_data = uploaded_file.getvalue()
+    result = chardet.detect(raw_data)
+    encoding = result['encoding']
+
+    # 디코딩해서 CSV로 로딩
+    stringio = StringIO(raw_data.decode(encoding))
     df = pd.read_csv(stringio)
 
     st.subheader("1. 비행 데이터 미리보기")
