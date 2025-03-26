@@ -13,7 +13,7 @@ st.title("🛸 DJI 비행로그 분석기")
 uploaded_file = st.file_uploader("비행 로그 파일 업로드 (.CSV 또는 .TXT)", type=["csv", "txt"])
 
 if uploaded_file:
-    # 인코딩 감지 및 처리
+    # 인코딩 감지 및 디코딩 처리
     raw_data = uploaded_file.getvalue()
     result = chardet.detect(raw_data)
     encoding = result["encoding"] if result["encoding"] else "utf-8"
@@ -24,9 +24,9 @@ if uploaded_file:
         stringio = StringIO(raw_data.decode("utf-16", errors="ignore"))
 
     try:
-        df = pd.read_csv(stringio)
+        df = pd.read_csv(stringio, on_bad_lines='skip')  # 잘못된 줄 무시
     except Exception as e:
-        st.error(f"CSV 파일을 읽을 수 없습니다: {e}")
+        st.error(f"CSV 파일을 불러올 수 없습니다: {e}")
         st.stop()
 
     st.subheader("1. 비행 데이터 미리보기")
